@@ -39,9 +39,36 @@ function scf_display_activation_notice(){
 // Hook it into 'admin_notices'
 add_action('admin_notices', 'scf_display_activation_notice');
 
+// Process the form submission
+function scf_handle_form_submission(){
+    // Check if the form is submitted
+    if (isset($_POST['scf-submitted'])) {
+        // clean the form inputs
+        $name = sanitize_text_field($_POST["scf-name"]);
+        $email = sanitize_email($_POST["scf-email"]);
+        $message = sanitize_textarea_field( $_POST["scf-message"] );
+
+        // Validate the required fields
+        if (!empty($name) && !empty($email) && !empty($message)) {
+            // Prepare the success message
+            $success_message = '<div class="notice notice-success"><p>Thank you for your message!</p></div>';
+            return $success_message;
+        } else {
+            // Prepare the error message
+            $error_message = '<div class="notice notice-error"><p>Please fill in all required fields.</p></div>';
+        }
+    }
+}
+
 // Display a simple message with the shortcode
 function scf_display_contact_form(){
+
+    $response = scf_handle_form_submission();
     $content = '';
+
+    if (!empty($response)) {
+        $content = $response;
+    }
 
     $content .= '<form method="post" action="' . esc_url($_SERVER['REQUEST_URI']) . '">';
     $content .= '<p>';
@@ -68,5 +95,4 @@ function scf_register_shortcodes(){
 }
 add_action( 'init', 'scf_register_shortcodes');
 
-// Commit 1
 
