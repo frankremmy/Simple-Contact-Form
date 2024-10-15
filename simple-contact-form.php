@@ -16,6 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+if (is_admin()) {
+    require_once plugin_dir_path(__FILE__) . 'admin-page.php';
+}
+
 // Run when the plugin is activated
 function scf_activate_plugin(){
     // Add transient to show activation notice in the admin area
