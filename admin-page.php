@@ -4,6 +4,7 @@ function scf_add_admin_menu(){
     add_menu_page(
         'Simple Contact Form Submissions', //Page titel
         'SCF Submissions', // Menu title
+        'manage_options', //Capability
         'scf_submissions', //Menu slug
         'scf_display_submissions' //callback function
     );
