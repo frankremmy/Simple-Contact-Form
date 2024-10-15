@@ -16,6 +16,14 @@ function scf_display_submissions(){
     global $wpdb;
     $table_name = $wpdb->prefix . 'scf_submissions';
 
+// Deletion handling
+if (isset($_GET['delete'])) {
+    $id_to_delete = absint($_GET['delete']);
+    $table_name = $wpdb->prefix . 'scf_submissions';
+    $wpdb->delete($table_name, ['id' => $id_to_delete]);
+    echo '<div class="notice notice-success is-dismissible"><p>Submission deleted.</p></div>';
+}
+
     // Pagination settings
     $limit = 5; // No of submissions per page
     $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
