@@ -2,7 +2,7 @@
 /*
  * Plugin Name:       Simple Contact Form
  * Plugin URI:        https://frankremmy.com
- * Description:       A WordPress plugin that lets users add a contact form to any page or post using a shortcode. The form will collect basic information like name, email, and message, and also store the data in the database as well as send an email notification.
+ * Description:       A plugin that lets users add a contact form to any page or post using a shortcode. The form will collect basic information like name, email, and message, and also store the data in the database as well as send an email notification.
  * Version:           0.1
  * Requires at least: 5.2
  * Requires PHP:      7.4
@@ -23,6 +23,28 @@ function scf_activate_plugin(){
 }
 // Hook to 'register_activation_hook'
 register_activation_hook(__FILE__, 'scf_activate_plugin');
+
+// Create a custom table when plugin is activated
+function scf_create_custom_table(){
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'scf_submissions';
+    
+    // Query statement to create the table
+    $charset_collate = $wpdb->get_charset_collate();
+    $sql = "CREATE TABLE $table_name (
+        id mediumint (9) NOT NULL AUTO_INCREMENT,
+        name varchar(100) NOT NULL,
+        email varchar(100) NOT NULL,
+        message text NOT NULL,
+        submitted_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        PRIMARY KEY (id)
+    ) $charset_collate;";
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    dbDelta($sql);
+}
+// Hook into plugin activation
+register_activation_hook(__FILE__, 'scf_create_custom_table');
 
 // Display the activation notice
 function scf_display_activation_notice(){
@@ -48,20 +70,20 @@ function scf_handle_form_submission(){
         // clean the form inputs
         $name = sanitize_text_field($_POST["scf-name"]);
         $email = sanitize_email($_POST["scf-email"]);
-        $message = sanitize_textarea_field( $_POST["scf-message"] );
+        $message = sanitize_textarea_field( $_POST["scf-message"]);
 
         // Validate required fields
         if (!empty($name) && !empty($email) && !empty($message)) {
-            // Add the data into the custom table
+            // Insert the data into the custom table
             $table_name = $wpdb->prefix . 'scf_submissions';
-            $table_name = $wpdb->insert(
+            $wpdb->insert(
                 $table_name,
                 [
                     'name' => $name,
                     'email' => $email,
                     'message' => $message
                 ]
-                );
+            );
             // Prepare the success message
             $success_message = '<div class="notice notice-success"><p>Thank you for your message!</p></div>';
             return $success_message;
@@ -107,25 +129,3 @@ function scf_register_shortcodes(){
     add_shortcode('simple_contact_form', 'scf_display_contact_form');
 }
 add_action( 'init', 'scf_register_shortcodes');
-
-// Create a custom table when plugin is activated
-function scf_create_custom_table(){
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'scf_submissions';
-    
-    // Query statement to create the table
-    $charset_collate = $wpdb->get_charset_collate();
-    $sql = "CREATE TABLE $table_name (
-        id mediumint (9) NOT NULL AUTO_INCREMENT,
-        name varchar(100) NOT NULL,
-        email varchar(100) NOT NULL,
-        message text NOT NULL,
-        submitted_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-        PRIMARY_KEY (id)
-    ) $charset_collate;";
-
-    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-    dbDelta($sql);
-}
-// Hook into plugin activation
-register_activation_hook(__FILE__, 'scf_create_custom_table');
