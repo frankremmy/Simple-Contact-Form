@@ -42,6 +42,7 @@ function scf_display_submissions(){
             echo '<td>' . esc_html($submission->email) . '</td>';
             echo '<td>' . esc_html($submission->message) . '</td>';
             echo '<td>' . esc_html($submission->submitted_at) . '</td>';
+            echo '<td><a href="?page=scf_submissions&delete=' . esc_attr($submission->id) . '">Delete</a></td>';
             echo '</tr>';
         }
     } else {
@@ -50,7 +51,6 @@ function scf_display_submissions(){
     
     echo '</tbody>';
     echo '</table>';
-    echo '</div>';
 
     // Pagination links
     echo '<div class="tablenav"><div class="tablenav-pages">';
