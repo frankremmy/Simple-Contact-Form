@@ -65,7 +65,7 @@ function scf_display_activation_notice(){
 // Hook into 'admin_notices'
 add_action('admin_notices', 'scf_display_activation_notice');
 
-// Process the form submission
+// Process the form submission and send an email
 function scf_handle_form_submission(){
     global $wpdb;
 
@@ -88,11 +88,24 @@ function scf_handle_form_submission(){
                     'message' => $message
                 ]
             );
-            // Prepare the success message
-            $success_message = '<div class="notice notice-success"><p>Thank you for your message!</p></div>';
+
+            // Prepare the email notification
+            $to = get_option('admin_email');
+            $subject = 'New Contact Form Submission';
+            $body = "You have received a new contact form submission. \n\n";
+            $body .= "Name: $name \n";
+	        $body .= "Email: $email\n";
+	        $body .= "Message: \n$message\n";
+            $headers = array( 'Content-type: text/plain; charset=UTF-8' );
+
+            // Send the email
+            wp_mail($to, $subject, $body, $headers);
+
+            // Success message
+            $success_message = '<div class="notice notice-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
             return $success_message;
         } else {
-            // Prepare the error message
+            // Error message
             $error_message = '<div class="notice notice-error"><p>Please fill in all required fields.</p></div>';
             return $error_message;
         }
