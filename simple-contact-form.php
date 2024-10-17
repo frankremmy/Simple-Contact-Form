@@ -3,8 +3,7 @@
  * Plugin Name:       Simple Contact Form
  * Plugin URI:        https://frankremmy.com
  * Description:       A plugin that lets users add a contact form to any page or post using a shortcode. The form will collect basic information like name, email, and message, and also store the data in the database as well as send an email notification.
- * Version:           0.1
- * Requires at least: 5.2
+ * Version:           0.2
  * Requires PHP:      7.4
  * Author:            Frank Remmy
  * Author URI:        https://frankremmy.com/
@@ -102,12 +101,10 @@ function scf_handle_form_submission(){
             wp_mail($to, $subject, $body, $headers);
 
             // Success message
-            $success_message = '<div class="notice notice-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
-            return $success_message;
+	        return '<div class="notice notice-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
         } else {
             // Error message
-            $error_message = '<div class="notice notice-error"><p>Please fill in all required fields.</p></div>';
-            return $error_message;
+	        return '<div class="notice notice-error"><p>Please fill in all required fields.</p></div>';
         }
     }
 }
@@ -122,23 +119,23 @@ function scf_display_contact_form(){
         $content = $response;
     }
 
-    $content .= '<form method="post" action="' . esc_url($_SERVER['REQUEST_URI']) . '">';
-    $content .= '<p>';
-    $content .= 'Name (required) <br/>';
-    $content .= '<input type="text" name="scf-name" pattern="[a-zA-Z0-9 ]+" value="' . (isset($_POST["scf-name"]) ? esc_attr($_POST["scf-name"]) : '') . '" size="80" />';
-    $content .= '</p>';
-    $content .= '<p>';
-    $content .= 'Email (required) <br/>';
-    $content .= '<input type="email" name="scf-email" value="' . (isset($_POST["scf-email"]) ? esc_attr($_POST["scf-email"]) : '') . '" size="80" />';
-    $content .= '</p>';
-    $content .= '<p>';
-    $content .= 'Message (required) <br/>';
-    $content .= '<textarea name="scf-message" rows="10" cols="65">' . (isset($_POST["scf-message"]) ? esc_attr($_POST["scf-message"]) : '') . '</textarea>';
-    $content .= '</p>';
-    $content .= '<p><input type="submit" name="scf-submitted" value="Send"/></p>';
-    $content .= '</form>';
+	$content .= '<form method="post" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">';
+	$content .= '<p>';
+	$content .= 'Name (required) <br/>';
+	$content .= '<input type="text" name="scf-name" pattern="[a-zA-Z0-9 ]+" value="' . ( isset( $_POST["scf-name"] ) ? esc_attr( $_POST["scf-name"] ) : '' ) . '" size="80" />';
+	$content .= '</p>';
+	$content .= '<p>';
+	$content .= 'Email (required) <br/>';
+	$content .= '<input type="email" name="scf-email" value="' . ( isset( $_POST["scf-email"] ) ? esc_attr( $_POST["scf-email"] ) : '' ) . '" size="80" />';
+	$content .= '</p>';
+	$content .= '<p>';
+	$content .= 'Message (required) <br/>';
+	$content .= '<textarea name="scf-message" rows="10" cols="65">' . ( isset( $_POST["scf-message"] ) ? esc_attr( $_POST["scf-message"] ) : '' ) . '</textarea>';
+	$content .= '</p>';
+	$content .= '<p><input type="submit" name="scf-submitted" value="Send"/></p>';
+	$content .= '</form>';
 
-    return $content;
+	return $content;
 }
 
 // Register the shortcode
