@@ -18,17 +18,23 @@ function scf_display_submissions(){
 
 // Deletion handling
 if (isset($_GET['delete'])) {
-    $id_to_delete = absint($_GET['delete']);
+    $id_to_delete = absint($_GET['delete']); // Make sure it's an integer
     $table_name = $wpdb->prefix . 'scf_submissions';
-    $wpdb->delete($table_name, ['id' => $id_to_delete]);
-    echo '<div class="notice notice-success is-dismissible"><p>Submission deleted.</p></div>';
-}
+	$submission_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE id = %d", $id_to_delete));
 
-    // Pagination settings
-    $limit = 5; // No of submissions per page
+if ($submission_exists) {
+	$wpdb->delete($table_name, ['id' => $id_to_delete]);
+	echo '<div class="notice notice-success is-dismissible"><p>Submission deleted.</p></div>';
+	wp_redirect(admin_url('admin.php?page=scf_submissions'));
+		exit;
+} else{
+	echo '<div class="notice notice-success is-dismissible"><p>Submission not found or already deleted.</p></div>';
+	}
+}
+    // Pagination logic
+    $limit = 10; // No of submissions per page
     $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
     $offset = ($paged - 1) * $limit;
-    // $results = $wpdb->get_results("SELECT * FROM $table_name"); //Retrieve submissions from db
 
     // Return db submissions w/ limit and offset
     $results = $wpdb->get_results("SELECT * FROM $table_name LIMIT $limit OFFSET $offset");
@@ -40,7 +46,7 @@ if (isset($_GET['delete'])) {
     // Admin submissions table
     echo '<div class="wrap">';
     echo '<h1>Simple Contact Form Submissions</h1>';
-    echo '<table class="widefat fixed" cellspacing="0">';
+    echo '<table class="widefat fixed" border-spacing="0">';
     echo '<thead><tr><th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Action</th></tr></thead>';
     echo '<tbody>';
         if ($results) {
