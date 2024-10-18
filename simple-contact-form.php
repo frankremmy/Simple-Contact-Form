@@ -74,6 +74,11 @@ add_action('admin_notices', 'scf_display_activation_notice');
 function scf_handle_form_submission(){
     global $wpdb;
 
+    // Validate nonce
+    if(!isset($_POST['scf_form_nonce']) || !wp_verify_nonce($_POST['scf_form_nonce'], 'scf_form_action')) {
+        return "<div class='notice notice-error'><p>Security check failed. Please try again.</p></div>";
+    }
+
     // Check if the form is submitted
     if (isset($_POST['scf-submitted'])) {
         // clean the form inputs
@@ -130,6 +135,7 @@ function scf_display_contact_form(){
     }
 
 	$content .= '<form method="post" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">';
+    $content .= wp_nonce_field('scf_form_action', 'scf_form_nonce', true, false ); // Add nonce field
 	$content .= '<p>';
 	$content .= 'Name (required) <br/>';
 	$content .= '<input type="text" name="scf-name" pattern="[a-zA-Z0-9 ]+" value="' . ( isset( $_POST["scf-name"] ) ? esc_attr( $_POST["scf-name"] ) : '' ) . '" size="80" />';
