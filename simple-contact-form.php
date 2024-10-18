@@ -15,8 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit; // Exit if accessed directly
 }
 
+// Include submission page
 if (is_admin()) {
     require_once plugin_dir_path(__FILE__) . 'admin-page.php';
+}
+
+// Include the settings page
+if (is_admin()) {
+	require_once plugin_dir_path(__FILE__) . 'settings-page.php';
 }
 
 // Run when the plugin is activated
@@ -75,9 +81,8 @@ function scf_handle_form_submission(){
         $email = sanitize_email($_POST["scf-email"]);
         $message = sanitize_textarea_field( $_POST["scf-message"]);
 
-        // Validate required fields
+        // Validate required fields and insert the data into the custom table
         if (!empty($name) && !empty($email) && !empty($message)) {
-            // Insert the data into the custom table
             $table_name = $wpdb->prefix . 'scf_submissions';
             $wpdb->insert(
                 $table_name,
@@ -100,10 +105,15 @@ function scf_handle_form_submission(){
             // Send the email
             wp_mail($to, $subject, $body, $headers);
 
-            // Success message
+            // Get the custom email address from the settings and fallback if not set
+            $to = get_option('scf_recipient_email');
+            if (!$to) {
+                $to = get_option('admin_email');
+            }
+
+            // Success & error messages
 	        return '<div class="notice notice-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
         } else {
-            // Error message
 	        return '<div class="notice notice-error"><p>Please fill in all required fields.</p></div>';
         }
     }
