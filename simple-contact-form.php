@@ -33,6 +33,12 @@ function scf_activate_plugin(){
 // Hook to 'register_activation_hook'
 register_activation_hook(__FILE__, 'scf_activate_plugin');
 
+// Enqueue custom style
+function scf_enqueue_styles() {
+	wp_enqueue_style('scf-styles', plugin_dir_url(__FILE__) . 'assets/css/scf-styles.css');
+}
+add_action('wp_enqueue_scripts', 'scf_enqueue_styles');
+
 // Create a custom table when plugin is activated
 function scf_create_custom_table(){
     global $wpdb;
@@ -118,19 +124,20 @@ function scf_handle_form_submission(){
             }
 
             // Success & error messages
-	        return '<div class="notice notice-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
+	        return '<div class="scf-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
         } else {
-	        return '<div class="notice notice-error"><p>Please fill in all required fields.</p></div>';
+	        return '<div class="scf-error"><p>Please fill in all required fields.</p></div>';
         }
     }
 }
 
 // Display a simple message with the shortcode
 function scf_display_contact_form(){
-
+    // Display any form submission messages
     $response = scf_handle_form_submission();
     $content = '';
 
+    // Display the response message if any
     if (!empty($response)) {
         $content = $response;
     }
@@ -139,15 +146,15 @@ function scf_display_contact_form(){
     $content .= wp_nonce_field('scf_form_action', 'scf_form_nonce', true, false ); // Add nonce field
 
 	$content .= '<p>';
-	$content .= 'Name (required) <br/>';
+	$content .= 'Name (required) <br />';
 	$content .= '<input type="text" name="scf-name" pattern="[a-zA-Z0-9 ]+" value="' . ( isset( $_POST["scf-name"] ) ? esc_attr( $_POST["scf-name"] ) : '' ) . '" size="80" />';
 	$content .= '</p>';
 	$content .= '<p>';
-	$content .= 'Email (required) <br/>';
+	$content .= 'Email (required) <br />';
 	$content .= '<input type="email" name="scf-email" value="' . ( isset( $_POST["scf-email"] ) ? esc_attr( $_POST["scf-email"] ) : '' ) . '" size="80" />';
 	$content .= '</p>';
 	$content .= '<p>';
-	$content .= 'Message (required) <br/>';
+	$content .= 'Message (required) <br />';
 	$content .= '<textarea name="scf-message" rows="10" cols="65">' . ( isset( $_POST["scf-message"] ) ? esc_attr( $_POST["scf-message"] ) : '' ) . '</textarea>';
 	$content .= '</p>';
 	$content .= '<p><input type="submit" name="scf-submitted" value="Send"/></p>';
