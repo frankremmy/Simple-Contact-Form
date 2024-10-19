@@ -65,11 +65,18 @@ register_activation_hook(__FILE__, 'scf_create_custom_table');
 function scf_display_activation_notice(){
     // Check if transient is set
     if (get_transient('scf_activation_notice')){
-        ?>  <div class='notice notice-success is-dismissible'>
-            <p><?php _e('Simple Contact Form plugin activated successfully!', 'scf-plugin'); ?></p>
-            </div>
+        $settings_url = admin_url('options-general.php?page=scf-settings');
+        ?>
+        <div class='notice notice-success is-dismissible'>
+            <p><?php printf(
+                    __('Simple Contact Form plugin activated! Go to <a href="%s"> Settings > SCF Settings</a> to configure the plugin.', 'scf'),
+                    esc_url($settings_url)
+                );
+            ?>
+            </p>
+        </div>
         <?php
-        // Delete transient show it only show once
+        // Delete transient to show it only show once
         delete_transient('scf_activation_notice');
     }   
 }
