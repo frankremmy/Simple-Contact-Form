@@ -78,22 +78,18 @@ function scf_handle_form_submission(){
     if (isset($_POST['scf-submitted'])) {
 
 	    // Validate nonce
-	    if(!isset($_POST['scf_form_nonce']) || !wp_verify_nonce($_POST['scf_form_nonce'], 'scf_form_action')) {
-		    return "<div class='notice notice-error'><p>Security check failed. Please try again.</p></div>";
+	    if (!isset($_POST['scf_form_nonce']) || !wp_verify_nonce($_POST['scf_form_nonce'], 'scf_form_action')) {
+		    return '<div class="notice notice-error"><p>Security check failed. Please try again.</p></div>';
 	    }
 
         // clean the form inputs
-        $name = sanitize_text_field($_POST['scf-name']);
-        $email = sanitize_email($_POST['scf-email']);
-        $message = sanitize_textarea_field( $_POST['scf-message']);
+        $name = sanitize_text_field($_POST["scf-name"]);
+        $email = sanitize_email($_POST["scf-email"]);
+        $message = sanitize_textarea_field( $_POST["scf-message"]);
 
         // Validate required fields and insert the data into the custom table
         if (!empty($name) && !empty($email) && !empty($message)) {
-
-            if (!is_email($email)) { // Validate email address
-		        return '<div class="notice notice-error">Please enter a valid email address.</div>';
-	        }
-            $table_name = $wpdb->prefix . 'scf_submissions'; // If all validations pass, add the data to the db
+            $table_name = $wpdb->prefix . 'scf_submissions';
             $wpdb->insert(
                 $table_name,
                 [
@@ -139,29 +135,21 @@ function scf_display_contact_form(){
         $content = $response;
     }
 
-    // Preserve form values
-    $name_value = isset($_POST['scf-name']) ? esc_attr($_POST["scf-name"]) : '';
-    $email_value = isset($_POST['scf-email'] ) ? esc_attr($_POST["scf-email"] ) : '';
-    $message_value = isset($_POST['scf-message'] ) ? esc_textarea($_POST["scf-message"] ) : '';
-
 	$content .= '<form method="post" action="' . esc_url( $_SERVER['REQUEST_URI'] ) . '">';
     $content .= wp_nonce_field('scf_form_action', 'scf_form_nonce', true, false ); // Add nonce field
 
-    $content .= '<p>';
-	$content .= 'Name (required) <br />';
+	$content .= '<p>';
+	$content .= 'Name (required) <br/>';
 	$content .= '<input type="text" name="scf-name" pattern="[a-zA-Z0-9 ]+" value="' . ( isset( $_POST["scf-name"] ) ? esc_attr( $_POST["scf-name"] ) : '' ) . '" size="80" />';
 	$content .= '</p>';
-
 	$content .= '<p>';
-	$content .= 'Email (required) <br />';
+	$content .= 'Email (required) <br/>';
 	$content .= '<input type="email" name="scf-email" value="' . ( isset( $_POST["scf-email"] ) ? esc_attr( $_POST["scf-email"] ) : '' ) . '" size="80" />';
 	$content .= '</p>';
-
 	$content .= '<p>';
-	$content .= 'Message (required) <br />';
+	$content .= 'Message (required) <br/>';
 	$content .= '<textarea name="scf-message" rows="10" cols="65">' . ( isset( $_POST["scf-message"] ) ? esc_attr( $_POST["scf-message"] ) : '' ) . '</textarea>';
 	$content .= '</p>';
-
 	$content .= '<p><input type="submit" name="scf-submitted" value="Send"/></p>';
 	$content .= '</form>';
 
