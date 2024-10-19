@@ -6,8 +6,20 @@ function scf_add_admin_menu(){
         'SCF Submissions', // Menu title
         'manage_options', //Capability
         'scf_submissions', //Menu slug
-        'scf_display_submissions' //callback function
+        'scf_display_submissions', //callback function
+        'dashicons-email-alt2',
+	    80
+
     );
+//	Submenu
+	add_submenu_page(
+		'scf_submissions',
+		'View Submissions',
+		'View Submissions',
+		'manage_options',
+		'view_submissions',
+		'scf_display_submissions'
+	);
 }
 add_action( 'admin_menu', 'scf_add_admin_menu');
 
