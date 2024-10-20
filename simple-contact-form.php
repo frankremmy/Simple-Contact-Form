@@ -175,3 +175,55 @@ function scf_register_shortcodes(){
     add_shortcode('simple_contact_form', 'scf_display_contact_form');
 }
 add_action( 'init', 'scf_register_shortcodes');
+
+// Add dashboard widget for recent submissions
+function scf_add_dashboard_widget() {
+	wp_add_dashboard_widget(
+            'scf_dashboard_widget',
+        'Recent Form Submissions',
+        'scf_display_dashboard_widget'
+    );
+}
+add_action('wp_dashboard_setup', 'scf_add_dashboard_widget');
+
+// Display recent submissions in the widget
+function scf_display_dashboard_widget() {
+	global $wpdb;
+    $table_name =   $wpdb->prefix . 'scf_submissions';
+
+//    Fetch the 5 most recent submissions
+    $results = $wpdb->get_results("SELECT name, email, message, submitted_at FROM $table_name ORDER BY submitted_at DESC LIMIT 5");
+    if ( !empty( $results ) ) {
+        echo '<ul>';
+        foreach ( $results as $submission ) {
+            echo '<li>';
+            echo '<strong>' . esc_html($submission->name) . '</strong> (' . esc_html($submission->email) . ')<br/>';
+            echo esc_html($submission->message) . '<br />';
+            echo '<em>Submitted on: ' . esc_html(date('F j, Y, g:i a', strtotime($submission->submitted_at))) . '</em>';
+            echo '<li><hr>';
+        }
+        echo '</ul>';
+	    echo '<p><a href="' . esc_url(admin_url('admin.php?page=scf_submissions')) . '">View All Submissions</a></p>';
+    } else {
+        echo '<p>No recent submissions found.</p>';
+    }
+}
+
+// Enqueue custom styles for the dashboard widget
+function scf_dashboard_widget_styles() {
+	echo '<style>
+        #scf_dashboard_widget ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        #scf_dashboard_widget li {
+            margin-bottom: 10px;
+        }
+        #scf_dashboard_widget hr {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+    </style>';
+}
+add_action('admin_head', 'scf_dashboard_widget_styles');
