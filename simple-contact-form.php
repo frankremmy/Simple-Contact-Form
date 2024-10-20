@@ -175,3 +175,13 @@ function scf_register_shortcodes(){
     add_shortcode('simple_contact_form', 'scf_display_contact_form');
 }
 add_action( 'init', 'scf_register_shortcodes');
+
+// Add dashboard widget for recent submissions
+function scf_add_dashboard_widget() {
+	wp_add_dashboard_widget(
+            'scf_dashboard_widget',
+        'Recent Form Submissions',
+        'scf_display_dashboard_widget'
+    );
+}
+add_action('wp_dashboard_setup', 'scf_add_dashboard_widget');
