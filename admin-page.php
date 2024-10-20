@@ -72,9 +72,6 @@ if ($submission_exists) {
 	echo '</thead>';
     echo '<tbody>';
 
-	// Return total no of submissions
-	$total_submissions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
-	$total_pages = ceil($total_submissions/$limit);
         if ($results) {
         foreach ($results as $submission) {
             echo '<tr>';
@@ -100,17 +97,32 @@ if ($submission_exists) {
 	echo '</form>';
 	echo '</div>';
 
-    // Pagination links
-    echo '<div class="tablenav"><div class="tablenav-pages">';
-    if ($total_pages > 1) {
-        $current_url = set_url_scheme('https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-        for ($i = 1; $i <= $total_pages; $i++) {
-            echo '<a href="' . esc_url(add_query_arg('paged', $i, $current_url)) . '" class="page-numbers ' . ($paged == $i ? 'current' : '') . '">' . $i . '</a>';
-        }
-    }
-    echo '</div>';
-}
+    // Add Pagination
+	$total_submissions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name"); 	// Return total no of submissions
+	$total_pages = ceil($total_submissions/$limit);
+	if ($total_pages > 1) {
+		$current_url = add_query_arg();  // Get the current URL
+		$first_page_url = remove_query_arg('paged', $current_url);
+		$prev_page_url = add_query_arg('paged', max(1, $paged - 1), $current_url);
+		$next_page_url = add_query_arg('paged', min($total_pages, $paged + 1), $current_url);
+		$last_page_url = add_query_arg('paged', $total_pages, $current_url);
 
+		echo '<div class="tablenav bottom">';
+		echo '<div class="tablenav-pages">';
+		printf('<span class="displaying-num">%s items</span>', $total_submissions);
+
+		echo '<span class="pagination-links">';
+		echo '<a class="first-page button" href="' . esc_url($first_page_url) . '"><span class="screen-reader-text">First page</span><span aria-hidden="true">&laquo;</span></a>';
+		echo '<a class="prev-page button" href="' . esc_url($prev_page_url) . '"><span class="screen-reader-text">Previous page</span><span aria-hidden="true">&lsaquo;</span></a>';
+		echo '<span class="screen-reader-text">Current Page</span>';
+		echo '<span class="paging-input"><span class="tablenav-paging-text">' . esc_html($paged) . ' of <span class="total-pages">' . esc_html($total_pages) . '</span></span></span>';
+		echo '<a class="next-page button" href="' . esc_url($next_page_url) . '"><span class="screen-reader-text">Next page</span><span aria-hidden="true">&rsaquo;</span></a>';
+		echo '<a class="last-page button" href="' . esc_url($last_page_url) . '"><span class="screen-reader-text">Last page</span><span aria-hidden="true">&raquo;</span></a>';
+		echo '</span>';  // End of pagination-links
+		echo '</div>';  // End of tablenav-pages
+		echo '</div>';  // End of tablenav bottom
+	}
+}
 /**
  * Exports form submission data to a CSV file and forces download if the 'export' GET parameter is set to 'csv'.
  *
@@ -162,3 +174,5 @@ function scf_bulk_delete_submissions() {
 	}
 }
 add_action('admin_init', 'scf_bulk_delete_submissions');
+
+
