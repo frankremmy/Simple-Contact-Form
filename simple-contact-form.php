@@ -33,7 +33,7 @@ function scf_activate_plugin(){
 // Hook to 'register_activation_hook'
 register_activation_hook(__FILE__, 'scf_activate_plugin');
 
-// Enqueue custom style
+// Enqueue scripts
 function scf_enqueue_styles() {
 	wp_enqueue_style('scf-styles', plugin_dir_url(__FILE__) . 'assets/css/scf-styles.css');
 }

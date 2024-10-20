@@ -50,23 +50,37 @@ if ($submission_exists) {
 
     // Return db submissions w/ limit and offset
     $results = $wpdb->get_results("SELECT * FROM $table_name LIMIT $limit OFFSET $offset");
-
-    // Return total no of submissions
-    $total_submissions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
-    $total_pages = ceil($total_submissions/$limit);
     
     // Admin submissions table
     echo '<div class="wrap">';
     echo '<h1>Simple Contact Form Submissions</h1>';
 
-//	Add "Export to CSV" button
-	echo '<a href="' . esc_url(admin_url('admin.php?page=scf_submissions&export=csv')) . '" class="button button-primary">Export to CSV</a>';
-    echo '<table class="widefat fixed" border-spacing="0">';
-    echo '<thead><tr><th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Action</th></tr></thead>';
+//	Add bulk delete form
+	echo '<form method="post" action="">';
+	echo '<input type="hidden" name="scf_bulk_action" value="delete" />';
+	echo '<a href="' . esc_url(admin_url('admin.php?page=scf_submissions&export=csv')) . '" class="button button-primary">Export to CSV</a>'; //Add "Export to CSV" button
+
+//	Style table with WP styling classes
+	echo '<table class="wp-list-table widefat fixed striped">';
+    echo '<thead>';
+	echo '<tr>';
+	echo '<td id="cb" class="manage-column column-cb check-column">';
+	echo '<input type="checkbox" id="select-all" />';
+	echo '</td>';
+	echo '<th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Action</th>';
+	echo '</tr>';
+	echo '</thead>';
     echo '<tbody>';
+
+	// Return total no of submissions
+	$total_submissions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+	$total_pages = ceil($total_submissions/$limit);
         if ($results) {
         foreach ($results as $submission) {
             echo '<tr>';
+			echo '<th scope="row" class="check-column">';
+			echo '<input type="checkbox" name="submission_ids[]" value="' . esc_attr($submission->id) . '" />';
+			echo '</th>';
             echo '<td>' . esc_html($submission->name) . '</td>';
             echo '<td>' . esc_html($submission->email) . '</td>';
             echo '<td>' . esc_html($submission->message) . '</td>';
@@ -75,11 +89,16 @@ if ($submission_exists) {
             echo '</tr>';
         }
     } else {
-        echo '<tr><td colspan="4">No submissions found.</td></tr>';
+        echo '<tr><td colspan="5">No submissions found.</td></tr>';
     }
     
     echo '</tbody>';
     echo '</table>';
+
+//	Add a bulk delete button with WP styling
+	echo '<p><input type="submit" class="button action" value="Delete Selected" /></p>';
+	echo '</form>';
+	echo '</div>';
 
     // Pagination links
     echo '<div class="tablenav"><div class="tablenav-pages">';
@@ -89,7 +108,6 @@ if ($submission_exists) {
             echo '<a href="' . esc_url(add_query_arg('paged', $i, $current_url)) . '" class="page-numbers ' . ($paged == $i ? 'current' : '') . '">' . $i . '</a>';
         }
     }
-    echo '</div></div>';
     echo '</div>';
 }
 
@@ -124,3 +142,23 @@ function scf_export_submission_csv() {
 	}
 }
 add_action('admin_init', 'scf_export_submission_csv');
+
+// Handle bulk deletion of submissions
+function scf_bulk_delete_submissions() {
+	if(isset($_POST['scf_bulk_action']) && $_POST['scf_bulk_action'] == 'delete') {
+		if (isset($_POST['submission_ids']) && is_array($_POST['submission_ids'])) {
+			 global $wpdb;
+			 $table_name = $wpdb->prefix . 'scf_submissions';
+//			 Sanitize and delete each selected submission
+			foreach ($_POST['submission_ids'] as $submission_id) {
+			$submission_id = absint($submission_id);
+			$wpdb->delete($table_name, ['id' => $submission_id]);
+			}
+//			Provide feedback to admin
+			echo '<div class="notice notice-success">Selected submissions deleted successfully.</div>';
+		} else{
+			echo '<div class="notice notice-error">Please select at least one submission to delete.</div>';
+		}
+	}
+}
+add_action('admin_init', 'scf_bulk_delete_submissions');
