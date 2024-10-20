@@ -83,24 +83,25 @@ function scf_display_activation_notice(){
 // Hook into 'admin_notices'
 add_action('admin_notices', 'scf_display_activation_notice');
 
-// Process the form submission and send an email
+/**
+ * Handles the submission of the contact form, including validation, sanitization, and storage of form data.
+ *
+ * This function checks for nonce validation to ensure security, sanitizes the input fields, validates required fields,
+ * inserts valid submissions into a custom database table, and sends email notifications to the admin.
+ * It returns appropriate success or error messages based on the form submission outcome.
+ *
+ * @return string Feedback message to be displayed to the user after form submission, indicating success or failure.
+ */
 function scf_handle_form_submission(){
     global $wpdb;
-
-    // Check if the form is submitted
     if (isset($_POST['scf-submitted'])) {
-
-	    // Validate nonce
-	    if (!isset($_POST['scf_form_nonce']) || !wp_verify_nonce($_POST['scf_form_nonce'], 'scf_form_action')) {
+        if (!isset($_POST['scf_form_nonce']) || !wp_verify_nonce($_POST['scf_form_nonce'], 'scf_form_action')) {
 		    return '<div class="notice notice-error"><p>Security check failed. Please try again.</p></div>';
 	    }
-
-        // clean the form inputs
         $name = sanitize_text_field($_POST["scf-name"]);
         $email = sanitize_email($_POST["scf-email"]);
         $message = sanitize_textarea_field( $_POST["scf-message"]);
 
-        // Validate required fields and insert the data into the custom table
         if (!empty($name) && !empty($email) && !empty($message)) {
             $table_name = $wpdb->prefix . 'scf_submissions';
             $wpdb->insert(
@@ -111,8 +112,6 @@ function scf_handle_form_submission(){
                     'message' => $message
                 ]
             );
-
-            // Prepare the email notification
             $to = get_option('admin_email');
             $subject = 'New Contact Form Submission';
             $body = "You have received a new contact form submission. \n\n";
@@ -121,30 +120,31 @@ function scf_handle_form_submission(){
 	        $body .= "Message: \n$message\n";
             $headers = array( 'Content-type: text/plain; charset=UTF-8' );
 
-            // Send the email
             wp_mail($to, $subject, $body, $headers);
 
-            // Get the custom email address from the settings and fallback if not set
             $to = get_option('scf_recipient_email');
             if (!$to) {
                 $to = get_option('admin_email');
             }
-
-            // Success & error messages
-	        return '<div class="scf-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
+            return '<div class="scf-success"><p>Thank you for your message! We will get back to you soon.</p></div>';
         } else {
 	        return '<div class="scf-error"><p>Please fill in all required fields.</p></div>';
         }
     }
 }
 
-// Display a simple message with the shortcode
+/**
+ * Generates and displays the contact form with validation and security measures.
+ *
+ * The form includes fields for name, email, and message with basic validation and nonce field for security.
+ * Handles the display of any form submission messages.
+ *
+ * @return string The HTML content for the contact form, including any response messages.
+ */
 function scf_display_contact_form(){
-    // Display any form submission messages
     $response = scf_handle_form_submission();
     $content = '';
 
-    // Display the response message if any
     if (!empty($response)) {
         $content = $response;
     }

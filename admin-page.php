@@ -2,11 +2,11 @@
 // add menu item
 function scf_add_admin_menu(){
     add_menu_page(
-        'Simple Contact Form Submissions', //Page title
-        'SCF Submissions', // Menu title
-        'manage_options', //Capability
-        'scf_submissions', //Menu slug
-        'scf_display_submissions', //callback function
+        'Simple Contact Form Submissions',
+        'SCF Submissions',
+        'manage_options',
+        'scf_submissions',
+        'scf_display_submissions',
         'dashicons-email-alt2',
 	    80
 
@@ -58,6 +58,9 @@ if ($submission_exists) {
     // Admin submissions table
     echo '<div class="wrap">';
     echo '<h1>Simple Contact Form Submissions</h1>';
+
+//	Add "Export to CSV" button
+	echo '<a href="' . esc_url(admin_url('admin.php?page=scf_submissions&export=csv')) . '" class="button button-primary">Export to CSV</a>';
     echo '<table class="widefat fixed" border-spacing="0">';
     echo '<thead><tr><th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Action</th></tr></thead>';
     echo '<tbody>';
@@ -72,7 +75,7 @@ if ($submission_exists) {
             echo '</tr>';
         }
     } else {
-        echo '<tr><td colspan="5">No submissions found.</td></tr>';
+        echo '<tr><td colspan="4">No submissions found.</td></tr>';
     }
     
     echo '</tbody>';
@@ -89,3 +92,35 @@ if ($submission_exists) {
     echo '</div></div>';
     echo '</div>';
 }
+
+/**
+ * Exports form submission data to a CSV file and forces download if the 'export' GET parameter is set to 'csv'.
+ *
+ * Retrieves data from the specified database table and formats it as CSV, where each row corresponds to a submission
+ * entry including Name, Email, Message, and the time it was submitted.
+ *
+ * @return void This method does not return a value. Instead, it sends the CSV output directly to the browser.
+ */
+function scf_export_submission_csv() {
+	if (isset($_GET['export']) && $_GET['export'] == 'csv') {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'scf_submissions';
+
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename=submissions.csv');
+
+		$output = fopen('php://output', 'w');
+
+		fputcsv($output, ['Name', 'Email', 'Message', 'Submitted At']);
+
+		$rows = $wpdb->get_results("SELECT name, email, message, submitted_at FROM $table_name", ARRAY_A);
+
+		foreach ($rows as $row) {
+			fputcsv($output, $row);
+		}
+
+		fclose($output);
+		exit;
+	}
+}
+add_action('admin_init', 'scf_export_submission_csv');
