@@ -208,3 +208,22 @@ function scf_display_dashboard_widget() {
         echo '<p>No recent submissions found.</p>';
     }
 }
+
+// Enqueue custom styles for the dashboard widget
+function scf_dashboard_widget_styles() {
+	echo '<style>
+        #scf_dashboard_widget ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        #scf_dashboard_widget li {
+            margin-bottom: 10px;
+        }
+        #scf_dashboard_widget hr {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+    </style>';
+}
+add_action('admin_head', 'scf_dashboard_widget_styles');
