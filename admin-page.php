@@ -101,16 +101,18 @@ if ($submission_exists) {
 	$total_submissions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name"); 	// Return total no of submissions
 	$total_pages = ceil($total_submissions/$limit);
 	if ($total_pages > 1) {
-		$current_url = add_query_arg();  // Get the current URL
-		$first_page_url = remove_query_arg('paged', $current_url);
-		$prev_page_url = add_query_arg('paged', max(1, $paged - 1), $current_url);
-		$next_page_url = add_query_arg('paged', min($total_pages, $paged + 1), $current_url);
-		$last_page_url = add_query_arg('paged', $total_pages, $current_url);
+		// Construct the pagination URLs manually
+		$base_url = admin_url('admin.php?page=scf_submissions');
+		$first_page_url = $base_url;
+		$prev_page_url = $base_url . '&paged=' . max(1, $paged - 1);
+		$next_page_url = $base_url . '&paged=' . min($total_pages, $paged + 1);
+		$last_page_url = $base_url . '&paged=' . $total_pages;
 
 		echo '<div class="tablenav bottom">';
 		echo '<div class="tablenav-pages">';
 		printf('<span class="displaying-num">%s items</span>', $total_submissions);
 
+		// Output the pagination links with manually constructed URLs
 		echo '<span class="pagination-links">';
 		echo '<a class="first-page button" href="' . esc_url($first_page_url) . '"><span class="screen-reader-text">First page</span><span aria-hidden="true">&laquo;</span></a>';
 		echo '<a class="prev-page button" href="' . esc_url($prev_page_url) . '"><span class="screen-reader-text">Previous page</span><span aria-hidden="true">&lsaquo;</span></a>';
