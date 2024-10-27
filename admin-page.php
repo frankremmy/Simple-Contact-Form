@@ -1,16 +1,16 @@
 <?php
 // add menu item
 function scf_add_admin_menu(){
-	add_menu_page(
-		'Simple Contact Form Submissions',
-		'SCF Submissions',
-		'manage_options',
-		'scf_submissions',
-		'scf_display_submissions',
-		'dashicons-email-alt2',
-		80
+    add_menu_page(
+        'Simple Contact Form Submissions',
+        'SCF Submissions',
+        'manage_options',
+        'scf_submissions',
+        'scf_display_submissions',
+        'dashicons-email-alt2',
+	    80
 
-	);
+    );
 //	Submenu
 	add_submenu_page(
 		'scf_submissions',
@@ -25,35 +25,35 @@ add_action( 'admin_menu', 'scf_add_admin_menu');
 
 // Display form submission on admin page
 function scf_display_submissions(){
-	global $wpdb;
-	$table_name = $wpdb->prefix . 'scf_submissions';
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'scf_submissions';
 
 // Deletion handling
-	if (isset($_GET['delete'])) {
-		$id_to_delete = absint($_GET['delete']); // Make sure it's an integer
-		$table_name = $wpdb->prefix . 'scf_submissions';
-		$submission_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE id = %d", $id_to_delete));
+if (isset($_GET['delete'])) {
+    $id_to_delete = absint($_GET['delete']); // Make sure it's an integer
+    $table_name = $wpdb->prefix . 'scf_submissions';
+	$submission_exists = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table_name WHERE id = %d", $id_to_delete));
 
-		if ($submission_exists) {
-			$wpdb->delete($table_name, ['id' => $id_to_delete]);
-			echo '<div class="notice notice-success is-dismissible"><p>Submission deleted.</p></div>';
-			wp_redirect(admin_url('admin.php?page=scf_submissions'));
-			exit;
-		} else{
-			echo '<div class="notice notice-success is-dismissible"><p>Submission not found or already deleted.</p></div>';
-		}
+if ($submission_exists) {
+	$wpdb->delete($table_name, ['id' => $id_to_delete]);
+	echo '<div class="notice notice-success is-dismissible"><p>Submission deleted.</p></div>';
+	wp_redirect(admin_url('admin.php?page=scf_submissions'));
+		exit;
+} else{
+	echo '<div class="notice notice-success is-dismissible"><p>Submission not found or already deleted.</p></div>';
 	}
-	// Pagination logic
-	$limit = 10; // No of submissions per page
-	$paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-	$offset = ($paged - 1) * $limit;
+}
+    // Pagination logic
+    $limit = 10; // No of submissions per page
+    $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+    $offset = ($paged - 1) * $limit;
 
-	// Return db submissions w/ limit and offset
-	$results = $wpdb->get_results("SELECT * FROM $table_name LIMIT $limit OFFSET $offset");
-
-	// Admin submissions table
-	echo '<div class="wrap">';
-	echo '<h1>Simple Contact Form Submissions</h1>';
+    // Return db submissions w/ limit and offset
+    $results = $wpdb->get_results("SELECT * FROM $table_name LIMIT $limit OFFSET $offset");
+    
+    // Admin submissions table
+    echo '<div class="wrap">';
+    echo '<h1>Simple Contact Form Submissions</h1>';
 
 //	Add bulk delete form
 	echo '<form method="post" action="">';
@@ -62,7 +62,7 @@ function scf_display_submissions(){
 
 //	Style table with WP styling classes
 	echo '<table class="wp-list-table widefat fixed striped">';
-	echo '<thead>';
+    echo '<thead>';
 	echo '<tr>';
 	echo '<td id="cb" class="manage-column column-cb check-column">';
 	echo '<input type="checkbox" id="select-all" />';
@@ -70,49 +70,47 @@ function scf_display_submissions(){
 	echo '<th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Action</th>';
 	echo '</tr>';
 	echo '</thead>';
-	echo '<tbody>';
+    echo '<tbody>';
 
-	if ($results) {
-		foreach ($results as $submission) {
-			echo '<tr>';
+        if ($results) {
+        foreach ($results as $submission) {
+            echo '<tr>';
 			echo '<th scope="row" class="check-column">';
 			echo '<input type="checkbox" name="submission_ids[]" value="' . esc_attr($submission->id) . '" />';
 			echo '</th>';
-			echo '<td>' . esc_html($submission->name) . '</td>';
-			echo '<td>' . esc_html($submission->email) . '</td>';
-			echo '<td>' . esc_html($submission->message) . '</td>';
-			echo '<td>' . esc_html($submission->submitted_at) . '</td>';
-			echo '<td><a href="?page=scf_submissions&delete=' . esc_attr($submission->id) . '">Delete</a></td>';
-			echo '</tr>';
-		}
-	} else {
-		echo '<tr><td colspan="5">No submissions found.</td></tr>';
-	}
-
-	echo '</tbody>';
-	echo '</table>';
+            echo '<td>' . esc_html($submission->name) . '</td>';
+            echo '<td>' . esc_html($submission->email) . '</td>';
+            echo '<td>' . esc_html($submission->message) . '</td>';
+            echo '<td>' . esc_html($submission->submitted_at) . '</td>';
+            echo '<td><a href="?page=scf_submissions&delete=' . esc_attr($submission->id) . '">Delete</a></td>';
+            echo '</tr>';
+        }
+    } else {
+        echo '<tr><td colspan="5">No submissions found.</td></tr>';
+    }
+    
+    echo '</tbody>';
+    echo '</table>';
 
 //	Add a bulk delete button with WP styling
 	echo '<p><input type="submit" class="button action" value="Delete Selected" /></p>';
 	echo '</form>';
 	echo '</div>';
 
-	// Add Pagination
+    // Add Pagination
 	$total_submissions = $wpdb->get_var("SELECT COUNT(*) FROM $table_name"); 	// Return total no of submissions
 	$total_pages = ceil($total_submissions/$limit);
 	if ($total_pages > 1) {
-		// Construct the pagination URLs manually
-		$base_url = admin_url('admin.php?page=scf_submissions');
-		$first_page_url = $base_url;
-		$prev_page_url = $base_url . '&paged=' . max(1, $paged - 1);
-		$next_page_url = $base_url . '&paged=' . min($total_pages, $paged + 1);
-		$last_page_url = $base_url . '&paged=' . $total_pages;
+		$current_url = add_query_arg();  // Get the current URL
+		$first_page_url = remove_query_arg('paged', $current_url);
+		$prev_page_url = add_query_arg('paged', max(1, $paged - 1), $current_url);
+		$next_page_url = add_query_arg('paged', min($total_pages, $paged + 1), $current_url);
+		$last_page_url = add_query_arg('paged', $total_pages, $current_url);
 
 		echo '<div class="tablenav bottom">';
 		echo '<div class="tablenav-pages">';
 		printf('<span class="displaying-num">%s items</span>', $total_submissions);
 
-		// Output the pagination links with manually constructed URLs
 		echo '<span class="pagination-links">';
 		echo '<a class="first-page button" href="' . esc_url($first_page_url) . '"><span class="screen-reader-text">First page</span><span aria-hidden="true">&laquo;</span></a>';
 		echo '<a class="prev-page button" href="' . esc_url($prev_page_url) . '"><span class="screen-reader-text">Previous page</span><span aria-hidden="true">&lsaquo;</span></a>';
@@ -161,12 +159,12 @@ add_action('admin_init', 'scf_export_submission_csv');
 function scf_bulk_delete_submissions() {
 	if(isset($_POST['scf_bulk_action']) && $_POST['scf_bulk_action'] == 'delete') {
 		if (isset($_POST['submission_ids']) && is_array($_POST['submission_ids'])) {
-			global $wpdb;
-			$table_name = $wpdb->prefix . 'scf_submissions';
+			 global $wpdb;
+			 $table_name = $wpdb->prefix . 'scf_submissions';
 //			 Sanitize and delete each selected submission
 			foreach ($_POST['submission_ids'] as $submission_id) {
-				$submission_id = absint($submission_id);
-				$wpdb->delete($table_name, ['id' => $submission_id]);
+			$submission_id = absint($submission_id);
+			$wpdb->delete($table_name, ['id' => $submission_id]);
 			}
 //			Provide feedback to admin
 			echo '<div class="notice notice-success">Selected submissions deleted successfully.</div>';
@@ -176,3 +174,5 @@ function scf_bulk_delete_submissions() {
 	}
 }
 add_action('admin_init', 'scf_bulk_delete_submissions');
+
+
