@@ -11,3 +11,4 @@ For development plans and bug reports, see [issues](https://github.com/frankremm
 
 ### NOTE
 The goal is to learn and grow in plugin development. You can also check out [#PluginJourney](https://x.com/hashtag/PluginJourney?src=hashtag_click&f=live) on X where I post updates on the journey.
+Refactor branch is for refactoring as new features, processes and technologies are added.
