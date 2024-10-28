@@ -2,7 +2,7 @@
 A WordPress plugin that lets users add a contact form to any page or post using a shortcode. The form will collect basic information like name, email, and message, and also store the data in the database as well as send an email notification. 
 
 #### How to Use
-- Go to [tags](https://github.com/frankremmy/simple-contact-form/tags) and download the latest one.
+- Go to [tags](https://github.com/frankremmy/simple-contact-form/tags) and download the latest version.
 - Install and activate the [plugin](https://www.wpbeginner.com/beginners-guide/step-by-step-guide-to-install-a-wordpress-plugin-for-beginners/#aioseo-install-a-plugin-using-the-wordpress-admin-plugin-upload) (use a dev environment for now since it's currently on development).
 - Add the contact form on a page or post using the shortcode [simple_contact_form].
 
