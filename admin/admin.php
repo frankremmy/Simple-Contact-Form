@@ -8,7 +8,7 @@ function scf_add_admin_menu(){
 		'Simple Contact Form Submissions',
 		'SCF Submissions',
 		'manage_options',
-		'scf_submissions',
+		'scf-submissions',
 		'scf_display_submissions',
 		'dashicons-email-alt2',
 		80
@@ -16,7 +16,7 @@ function scf_add_admin_menu(){
 	);
 //	Submenu
 	add_submenu_page(
-		'scf_submissions',
+		'scf-submissions',
 		'View Submissions',
 		'View Submissions',
 		'manage_options',

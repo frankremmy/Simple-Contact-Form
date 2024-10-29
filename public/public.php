@@ -67,14 +67,16 @@ function scf_handle_form_submission() {
 
 // Send notification email to the admin
 function scf_send_notification_email($name, $email, $message) {
-	$admin_email = get_option('admin_email');
-	$subject = 'New Contact Form Submission';
-	$body = "You have received a new message:\n\n";
-	$body .= "Name: $name\n";
-	$body .= "Email: $email\n";
-	$body .= "Message:\n$message\n";
-	$body .= "\n---\nThis message was sent from your contact form.";
+	$admin_email = get_option('scf_recipient_email',get_option('admin_email'));
+	$subject = get_option('scf_email_subject','New Contact Form Submission');
+	$body_template = get_option('scf_email_body', 'You have received a new message:\n\nName: {name}\nEmail: {email}\nMessage:\n{message}\n');
 
+//	Replace placeholders with actual values
+	$body = str_replace(
+		array('{name}', '{email}', '{message}'),
+		array($name, $email, $message),
+		$body_template
+	);
 //	Add Reply-To and From headers
 	$headers = array(
 		'From: ' . $admin_email,
