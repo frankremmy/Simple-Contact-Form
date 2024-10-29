@@ -73,6 +73,13 @@ function scf_send_notification_email($name, $email, $message) {
 	$body .= "Name: $name\n";
 	$body .= "Email: $email\n";
 	$body .= "Message:\n$message\n";
+	$body .= "\n---\nThis message was sent from your contact form.";
 
-	wp_mail($admin_email, $subject, $body);
+//	Add Reply-To and From headers
+	$headers = array(
+		'From: ' . $admin_email,
+		'Reply-To: ' . $email
+	);
+
+	wp_mail($admin_email, $subject, $body, $headers);
 }
