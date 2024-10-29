@@ -8,7 +8,7 @@ function scf_display_contact_form($atts) {
 			'name_placeholder' => 'Your Name',
 			'email_placeholder' => 'Your Email',
 			'message_placeholder' => 'Your Message',
-			'button_message' => 'Send Message'
+			'button_text' => 'Send Message'
 		),
 		$atts,
 		'simple_contact_form'
@@ -38,7 +38,7 @@ function scf_display_contact_form($atts) {
 	$content .= 'Message (required) <br />';
 	$content .= '<textarea name="scf-message" placeholder="' . esc_attr($atts['message_placeholder']) . '" rows="10" cols="65">' . ( isset($_POST["scf-message"]) ? esc_attr($_POST["scf-message"]) : '' ) . '</textarea>';
 	$content .= '</p>';
-	$content .= '<p><input type="submit" name="scf-submitted" value="' . esc_attr($atts['button_message']) . '"/></p>';
+	$content .= '<p><input type="submit" name="scf-submitted" value="' . esc_attr($atts['button_text']) . '"/></p>';
 	$content .= '</form>';
 
 	return $content;
