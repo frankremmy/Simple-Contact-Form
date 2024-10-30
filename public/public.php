@@ -1,7 +1,19 @@
 <?php
 
 // Display the contact form on the frontend
-function scf_display_contact_form() {
+function scf_display_contact_form($atts) {
+//	Define default attributes
+	$atts = shortcode_atts(
+		array(
+			'name_placeholder' => 'Your Name',
+			'email_placeholder' => 'Your Email',
+			'message_placeholder' => 'Your Message',
+			'button_text' => 'Send Message'
+		),
+		$atts,
+		'simple_contact_form'
+	);
+
 	$response = scf_handle_form_submission();  // Handle form submission and get the response message
 	$content = '';
 
@@ -10,23 +22,23 @@ function scf_display_contact_form() {
 		$content = $response;
 	}
 
-	// Display the form
+	// Display the form using the attributes
 	$content .= '<form method="post" action="' . esc_url($_SERVER['REQUEST_URI']) . '">';
 	$content .= wp_nonce_field('scf_form_action', 'scf_form_nonce', true, false);
 
 	$content .= '<p>';
 	$content .= 'Name (required) <br />';
-	$content .= '<input type="text" name="scf-name" pattern="[a-zA-Z0-9 ]+" value="' . ( isset($_POST["scf-name"]) ? esc_attr($_POST["scf-name"]) : '' ) . '" size="80" />';
+	$content .= '<input type="text" name="scf-name" placeholder="' . esc_attr($atts['name_placeholder']) . '" pattern="[a-zA-Z0-9 ]+" value="' . ( isset($_POST["scf-name"]) ? esc_attr($_POST["scf-name"]) : '' ) . '" size="80" />';
 	$content .= '</p>';
 	$content .= '<p>';
 	$content .= 'Email (required) <br />';
-	$content .= '<input type="email" name="scf-email" value="' . ( isset($_POST["scf-email"]) ? esc_attr($_POST["scf-email"]) : '' ) . '" size="80" />';
+	$content .= '<input type="email" name="scf-email" placeholder="' . esc_attr($atts['email_placeholder']) . '" value="' . ( isset($_POST["scf-email"]) ? esc_attr($_POST["scf-email"]) : '' ) . '" size="80" />';
 	$content .= '</p>';
 	$content .= '<p>';
 	$content .= 'Message (required) <br />';
-	$content .= '<textarea name="scf-message" rows="10" cols="65">' . ( isset($_POST["scf-message"]) ? esc_attr($_POST["scf-message"]) : '' ) . '</textarea>';
+	$content .= '<textarea name="scf-message" placeholder="' . esc_attr($atts['message_placeholder']) . '" rows="10" cols="65">' . ( isset($_POST["scf-message"]) ? esc_attr($_POST["scf-message"]) : '' ) . '</textarea>';
 	$content .= '</p>';
-	$content .= '<p><input type="submit" name="scf-submitted" value="Send"/></p>';
+	$content .= '<p><input type="submit" name="scf-submitted" value="' . esc_attr($atts['button_text']) . '"/></p>';
 	$content .= '</form>';
 
 	return $content;
