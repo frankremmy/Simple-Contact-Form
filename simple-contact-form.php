@@ -130,3 +130,27 @@ function scf_display_dashboard_widget() {
 		echo '<p>No recent submissions found.</p>';
 	}
 }
+
+// Define custom capabilities when activated
+function scf_add_custom_capabilities() {
+//    Get the admin role
+    $admin_role = get_role('administrator');
+
+//    Add custom capabilities to the administrator role
+    if ( $admin_role ) {
+        $admin_role->add_cap('manage_scf_settings');
+        $admin_role->add_cap('view_scf_submissions');
+    }
+}
+register_activation_hook(__FILE__, 'scf_add_custom_capabilities');
+
+// Remove cap when deactivated
+function scf_remove_custom_capabilities() {
+	$admin_role = get_role('administrator');
+
+    if ( $admin_role ) {
+	    $admin_role->remove_cap('manage_scf_settings');
+	    $admin_role->remove_cap('view_scf_submissions');
+    }
+}
+register_deactivation_hook(__FILE__, 'scf_remove_custom_capabilities');
