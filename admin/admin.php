@@ -29,7 +29,7 @@ add_action( 'admin_menu', 'scf_add_admin_menu');
 // Admin Page: Display Submissions
 function scf_display_submissions() {
 // Check capabilities
-	if (!current_user_can('view_scf_submissions')) {
+	if (!current_user_can('view_scf_submissions') && !current_user_can('manage_options')) {
 		wp_die(__('You do not have permissions to view submissions.', 'scf'));
 	}
 	// Handle single deletion
