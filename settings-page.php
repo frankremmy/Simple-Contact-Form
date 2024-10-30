@@ -15,6 +15,10 @@ add_action('admin_menu', 'scf_add_settings_page');
 
 // Render the settings page content
 function scf_render_settings_page() {
+    if (! current_user_can('manage_options')) {
+        wp_die(__('You do not have permission to access this page.', 'scf'));
+    }
+
 	?>
     <div class="wrap">
         <h1>Simple Contact Form Settings</h1>
@@ -92,4 +96,3 @@ function scf_email_body_callback() {
 	$body = get_option('scf_email_body', "You have received a new message:\n\nName: {name}\nEmail: {email}\nMessage:\n{message}\n");
 	echo '<textarea name="scf_email_body" rows="5" cols="50">' . esc_textarea($body) . '</textarea>';
 }
-
