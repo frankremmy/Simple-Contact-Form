@@ -5,8 +5,8 @@ require_once plugin_dir_path(__FILE__) . '../includes/database.php'; // Load the
 
 function scf_add_admin_menu(){
 	add_menu_page(
-		'Simple Contact Form Submissions',
-		'SCF Submissions',
+		__('Simple Contact Form Submissions', 'simple-contact-form'),
+		__('SCF Submissions','simple-contact-form'),
 		'manage_options',
 		'scf-submissions',
 		'scf_display_submissions',
@@ -17,8 +17,8 @@ function scf_add_admin_menu(){
 //	Submenu
 	add_submenu_page(
 		'scf-submissions',
-		'View Submissions',
-		'View Submissions',
+		__('View Submissions', 'simple-contact-form'),
+		__('View Submissions', 'simple-contact-form'),
 		'manage_options',
 		'view_submissions',
 		'scf_display_submissions'
@@ -30,15 +30,15 @@ add_action( 'admin_menu', 'scf_add_admin_menu');
 function scf_display_submissions() {
 // Check capabilities
 	if (!current_user_can('view_scf_submissions') && !current_user_can('manage_options')) {
-		wp_die(__('You do not have permissions to view submissions.', 'scf'));
+		wp_die(__('You do not have permissions to view submissions.', 'simple-contact-form'));
 	}
 	// Handle single deletion
 	if (isset($_GET['delete'])) {
 		$id_to_delete = absint($_GET['delete']);
 		if (scf_delete_submission($id_to_delete)) {
-			echo '<div class="notice notice-success is-dismissible"><p>Submission deleted.</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . __('Submission deleted.', 'simple-contact-form') . '</p></div>';
 		} else {
-			echo '<div class="notice notice-error is-dismissible"><p>Submission not found or already deleted.</p></div>';
+			echo '<div class="notice notice-error is-dismissible"><p>' . __('Submission not found or already deleted.', 'simple-contact-form') . '</p></div>';
 		}
 		wp_redirect(admin_url('admin.php?page=scf_submissions'));
 		exit;
@@ -55,16 +55,20 @@ function scf_display_submissions() {
 
 	// Admin table for submissions
 	echo '<div class="wrap">';
-	echo '<h1>Simple Contact Form Submissions</h1>';
+	echo '<h1>' . __('Simple Contact Form Submissions', 'simple-contact-form') . '</h1>';
 	echo '<form method="post" action="">';
 	echo '<input type="hidden" name="scf_bulk_action" value="delete" />';
-	echo '<a href="' . esc_url(admin_url('admin.php?page=scf_submissions&export=csv')) . '" class="button button-primary">Export to CSV</a>';
+	echo '<a href="' . esc_url(admin_url('admin.php?page=scf_submissions&export=csv')) . '" class="button button-primary">' . __('Export to CSV', 'simple-contact-form') . '</a>';
 	echo '<table class="wp-list-table widefat fixed striped">';
 	echo '<thead><tr>';
 	echo '<td id="cb" class="manage-column column-cb check-column">';
 	echo '<input type="checkbox" id="select-all" />';
 	echo '</td>';
-	echo '<th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Action</th>';
+	echo '<th>' . __('Name', 'simple-contact-form') . '</th>';
+	echo '<th>' . __('Email', 'simple-contact-form') . '</th>';
+	echo '<th>' . __('Message', 'simple-contact-form') . '</th>';
+	echo '<th>' . __('Date', 'simple-contact-form') . '</th>';
+	echo '<th>' . __('Action', 'simple-contact-form') . '</th>';
 	echo '</tr></thead>';
 	echo '<tbody>';
 
@@ -76,16 +80,16 @@ function scf_display_submissions() {
 			echo '<td>' . esc_html($submission->email) . '</td>';
 			echo '<td>' . esc_html($submission->message) . '</td>';
 			echo '<td>' . esc_html($submission->submitted_at) . '</td>';
-			echo '<td><a href="?page=scf_submissions&delete=' . esc_attr($submission->id) . '">Delete</a></td>';
+			echo '<td><a href="?page=scf_submissions&delete=' . esc_attr($submission->id) . '">' . __('Delete', 'simple-contact-form') . '</a></td>';
 			echo '</tr>';
 		}
 	} else {
-		echo '<tr><td colspan="5">No submissions found.</td></tr>';
+		echo '<tr><td colspan="5">' . __('No submissions found.', 'simple-contact-form') . '</td></tr>';
 	}
 
 	echo '</tbody>';
 	echo '</table>';
-	echo '<p><input type="submit" class="button action" value="Delete Selected" /></p>';
+	echo '<p><input type="submit" class="button action" value="' . __('Delete Selected', 'simple-contact-form') . '" /></p>';
 	echo '</form>';
 	echo '</div>';
 
