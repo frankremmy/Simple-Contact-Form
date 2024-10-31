@@ -157,6 +157,6 @@ register_deactivation_hook(__FILE__, 'scf_remove_custom_capabilities');
 
 // Load text domain
 function scf_load_textdomain() {
-	load_plugin_textdomain('simple-contact-form', false, dirname( plugin_basename(__FILE__) ) . '/languages/');
+	load_plugin_textdomain('simple-contact-form', false, dirname( plugin_basename(__FILE__) ) . '/lang/');
 }
 add_action('plugins_loaded', 'scf_load_textdomain');
