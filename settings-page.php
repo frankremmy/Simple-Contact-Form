@@ -3,8 +3,8 @@
 // Create a settings page in the admin dashboard
 function scf_add_settings_page() {
 	add_options_page(
-		'Simple Contact Form Settings',
-		'SCF Settings',
+		__('Simple Contact Form Settings', 'simple-contact-form'),
+		__('SCF Settings', 'simple-contact-form'),
 		'manage_options',
 		'scf-settings',
 		'scf_render_settings_page'
@@ -16,7 +16,7 @@ add_action('admin_menu', 'scf_add_settings_page');
 // Render the settings page content
 function scf_render_settings_page() {
     if (! current_user_can('manage_options')) {
-        wp_die(__('You do not have permission to access this page.', 'scf'));
+        wp_die(__('You do not have permission to access this page.', 'simple-contact-form'));
     }
 
 	?>
@@ -43,14 +43,14 @@ function scf_register_email_settings() {
 
 	add_settings_section(
 		'scf_email_settings_section',
-		'Email Notification Settings',
+		__('Email Notification Settings', 'simple-contact-form'),
 		'scf_email_settings_section_callback',
 		'scf-settings'
 	);
 
 	add_settings_field(
 		'scf_recipient_email',
-		'Recipient Email',
+		__('Recipient Email', 'simple-contact-form'),
 		'scf_recipient_email_callback',
 		'scf-settings',
 		'scf_email_settings_section'
@@ -58,7 +58,7 @@ function scf_register_email_settings() {
 
 	add_settings_field(
 		'scf_email_subject',
-		'Email Subject',
+		__('Email Subject', 'simple-contact-form'),
 		'scf_email_subject_callback',
 		'scf-settings',
 		'scf_email_settings_section'
@@ -66,7 +66,7 @@ function scf_register_email_settings() {
 
 	add_settings_field(
 		'scf_email_body',
-		'Email Body Template',
+		__('Email Body Template', 'simple-contact-form'),
 		'scf_email_body_callback',
 		'scf-settings',
 		'scf_email_settings_section'
@@ -76,7 +76,7 @@ add_action('admin_init', 'scf_register_email_settings');
 
 // Section callback
 function scf_email_settings_section_callback() {
-	echo '<p>Customize the email notifications sent when a form is submitted.</p>';
+	echo '<p>' . __('Customize the email notifications sent when a form is submitted.', 'simple-contact-form') . '</p>';
 }
 
 // Callback for recipient email
