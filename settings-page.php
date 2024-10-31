@@ -22,7 +22,7 @@ function scf_render_settings_page() {
     // For Reset button
 	if (isset($_POST['scf_reset_settings']) && check_admin_referer('scf_reset_settings_nonce')) {
 		scf_reset_plugin_settings();
-		add_settings_error('scf_messages', 'scf_message', __('Settings reset to default values.', 'simple-contact-form'), 'updated');
+		add_settings_error('scf_messages', 'scf_message', __('Settings reset successful.', 'simple-contact-form'), 'updated');
 	}
 
 	settings_errors('scf_messages');
@@ -36,10 +36,15 @@ function scf_render_settings_page() {
 			submit_button();
 			?>
         </form>
-        <form method="post" action="">
+        <form method="post" action="" onsubmit="return confirmReset()">
 		    <?php wp_nonce_field('scf_reset_settings_nonce'); ?>
             <input type="submit" name="scf_reset_settings" class="button button-secondary" value="<?php _e('Reset to Defaults', 'simple-contact-form'); ?>">
         </form>
+        <script type="text/javascript">
+            function confirmReset() {
+                return confirm("Are you sure you want to reset all settings to default?");
+            }
+        </script>
     </div>
 	<?php
 }
