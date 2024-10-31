@@ -19,15 +19,26 @@ function scf_render_settings_page() {
         wp_die(__('You do not have permission to access this page.', 'simple-contact-form'));
     }
 
+    // For Reset button
+	if (isset($_POST['scf_reset_settings']) && check_admin_referer('scf_reset_settings_nonce')) {
+		scf_reset_plugin_settings();
+		add_settings_error('scf_messages', 'scf_message', __('Settings reset to default values.', 'simple-contact-form'), 'updated');
+	}
+
+	settings_errors('scf_messages');
 	?>
     <div class="wrap">
-        <h1>Simple Contact Form Settings</h1>
+        <h1><?php _e('Simple Contact Form Settings', 'simple-contact-form'); ?></h1>
         <form method="post" action="options.php">
 			<?php
 			settings_fields('scf_settings_group');
 			do_settings_sections('scf-settings');
 			submit_button();
 			?>
+        </form>
+        <form method="post" action="">
+		    <?php wp_nonce_field('scf_reset_settings_nonce'); ?>
+            <input type="submit" name="scf_reset_settings" class="button button-secondary" value="<?php _e('Reset to Defaults', 'simple-contact-form'); ?>">
         </form>
     </div>
 	<?php
@@ -95,4 +106,11 @@ function scf_email_subject_callback() {
 function scf_email_body_callback() {
 	$body = get_option('scf_email_body', "You have received a new message:\n\nName: {name}\nEmail: {email}\nMessage:\n{message}\n");
 	echo '<textarea name="scf_email_body" rows="5" cols="50">' . esc_textarea($body) . '</textarea>';
+}
+
+// Define the reset function
+function scf_reset_plugin_settings() {
+	delete_option('scf_recipient_email');
+	delete_option('scf_email_subject');
+	delete_option('scf_email_body');
 }
