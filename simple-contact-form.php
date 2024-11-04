@@ -85,4 +85,3 @@ function run_simple_contact_form() {
 
 }
 run_simple_contact_form();
-
