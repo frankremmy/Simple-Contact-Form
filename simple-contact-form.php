@@ -4,7 +4,7 @@
  * The plugin bootstrap file
  *
  * This file is read by WordPress to generate the plugin information in the plugin
- * admin area. This file also includes all the dependencies used by the plugin,
+ * admin area. This file also includes all of the dependencies used by the plugin,
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
@@ -85,3 +85,4 @@ function run_simple_contact_form() {
 
 }
 run_simple_contact_form();
+
