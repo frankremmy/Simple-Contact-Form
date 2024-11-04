@@ -46,7 +46,7 @@ function activate_simple_contact_form() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-simple-contact-form-database.php';
 	require_once plugin_dir_path( __FILE__ ) . 'public/class-simple-contact-form-public.php';
 	$db = new Simple_Contact_Form_Database();
-	$db->create_submissions_table();
+	$db->create_custom_form_tables();
 	Simple_Contact_Form_Activator::activate();
 }
 
