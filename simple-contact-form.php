@@ -1,87 +1,52 @@
-<?php
-
-/**
- * The plugin bootstrap file
- *
- * This file is read by WordPress to generate the plugin information in the plugin
- * admin area. This file also includes all the dependencies used by the plugin,
- * registers the activation and deactivation functions, and defines a function
- * that starts the plugin.
- *
- * @link              https://frankremmy.com
- * @since             1.0.0
- * @package           Simple_Contact_Form
- *
- * @wordpress-plugin
+<?php 
+/*
  * Plugin Name:       Simple Contact Form
  * Plugin URI:        https://frankremmy.com
  * Description:       A plugin that lets users add a contact form to any page or post using a shortcode. The form will collect basic information like name, email, and message, and also store the data in the database as well as send an email notification.
- * Version:           1.0.0
+ * Version:           0.3.0
+ * Requires PHP:      7.4
  * Author:            Frank Remmy
  * Author URI:        https://frankremmy.com/
- * License:           GPL-2.0+
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       simple-contact-form
- * Domain Path:       /languages
  */
 
-// If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-	die;
+// Check if ABSPATH is defined to prevent direct access
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
 }
 
-/**
- * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
- */
-define( 'SIMPLE_CONTACT_FORM_VERSION', '1.0.0' );
+// Include necessary files
+require_once plugin_dir_path(__FILE__) . 'admin/admin.php';
+require_once plugin_dir_path(__FILE__) . 'includes/database.php';
+require_once plugin_dir_path(__FILE__) . 'public/public.php';
+require_once plugin_dir_path(__FILE__) . 'settings-page.php';
 
-/**
- * The code that runs during plugin activation.
- * This action is documented in includes/class-simple-contact-form-activator.php
- */
-function activate_simple_contact_form() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-simple-contact-form-activator.php';
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-simple-contact-form-database.php';
-	require_once plugin_dir_path( __FILE__ ) . 'public/class-simple-contact-form-public.php';
-	$db = new Simple_Contact_Form_Database();
-	$db->create_submissions_table();
-	Simple_Contact_Form_Activator::activate();
+// Enqueue styles for the form
+function scf_enqueue_styles() {
+	wp_enqueue_style('scf-styles', plugin_dir_url(__FILE__) . 'assets/css/scf-styles.css');
 }
+add_action('wp_enqueue_scripts', 'scf_enqueue_styles');
 
-/**
- * The code that runs during plugin deactivation.
- * This action is documented in includes/class-simple-contact-form-deactivator.php
- */
-function deactivate_simple_contact_form() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-simple-contact-form-deactivator.php';
-	Simple_Contact_Form_Deactivator::deactivate();
+// Add transient to show activation notice in the admin area
+function scf_activate_plugin(){
+	set_transient('scf_activation_notice', true, 5);
 }
+register_activation_hook(__FILE__, 'scf_activate_plugin');
 
-register_activation_hook( __FILE__, 'activate_simple_contact_form' );
-register_deactivation_hook( __FILE__, 'deactivate_simple_contact_form' );
-
-/**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
- */
-require plugin_dir_path( __FILE__ ) . 'includes/class-simple-contact-form.php';
-require plugin_dir_path( __FILE__ ) . 'includes/class-simple-contact-form-database.php';
-
-/**
- * Begins execution of the plugin.
- *
- * Since everything within the plugin is registered via hooks,
- * then kicking off the plugin from this point in the file does
- * not affect the page life cycle.
- *
- * @since    1.0.0
- */
-function run_simple_contact_form() {
-
-	$plugin = new Simple_Contact_Form();
-	$plugin->run();
-
+// Display activation notice
+function scf_display_activation_notice(){
+	if (get_transient('scf_activation_notice')){
+		$settings_url = admin_url('options-general.php?page=scf-settings');
+		?>
+        <div class='notice notice-success is-dismissible'>
+            <p><?php printf(
+					__('Simple Contact Form plugin activated! Go to <a href="%s"> Settings > SCF Settings</a> to configure the plugin.', 'scf'),
+					esc_url($settings_url)
+				);
+				?>
+            </p>
+        </div>
+		<?php
+		delete_transient('scf_activation_notice');
+	}
 }
-run_simple_contact_form();
